@@ -12,14 +12,15 @@ import System.Directory
 import Text.Printf
 
 data SSHEntry = SSHEntry
-  { key :: String,
+  { keyType :: String,
+    key :: String,
     user :: String
   }
   deriving (Show)
 
 instance PrintfArg SSHEntry where
   formatArg k fmt =
-    formatString (unwords ["ssh-rsa", key k, user k]) (fmt {fmtChar = 's', fmtPrecision = Nothing})
+    formatString (unwords [keyType k, key k, user k]) (fmt {fmtChar = 's', fmtPrecision = Nothing})
 
 keysFromFile :: FilePath -> IO [SSHEntry]
 keysFromFile p = do
@@ -35,4 +36,6 @@ keysToFile p l = do
   mapM_ (appendFile p . printf "%s\n") l
 
 lineToSSHEntry :: String -> SSHEntry
-lineToSSHEntry l = SSHEntry (words l !! 1) (unwords . drop 2 . words $ l)
+lineToSSHEntry l = SSHEntry (head w) (w !! 1) (unwords . drop 2 $ w)
+  where
+    w = words l

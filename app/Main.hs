@@ -20,7 +20,8 @@ sshManager _ [] = putStrLn "You have to provide a command."
 sshManager path ["ls"] = listKeys path
 sshManager path ["get", id] = getKey path (read id)
 sshManager path ("del" : ids) = mapM_ (deleteKey path . read) ids
-sshManager path ["add", key, name] = addKey path $ SSHEntry key name
+sshManager path ["add", key, name] = addKey path $ SSHEntry "ssh-rsa" key name
+sshManager path ["add", t, key, name] = addKey path $ SSHEntry t key name
 sshManager path ["reformat"] = deleteKey path (-1)
 
 sshManager _ (x : _) = printf "Unknown command: %s" x
